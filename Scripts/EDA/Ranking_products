@@ -1,0 +1,21 @@
+----------------------------------------------------
+--Ranking
+--TOP 5 products according to revenue
+SELECT TOP 5
+s2.product_name, SUM(s1.sales_amount) AS total_sales
+FROM gold.fact_sales s1
+LEFT JOIN gold.dim_products s2
+ON s1.product_key = s2.product_key
+GROUP BY s2.product_name
+ORDER BY total_sales DESC
+
+--top 5 worst products
+SELECT product_name, total_sales FROM
+(SELECT 
+s2.product_name, SUM(s1.sales_amount) AS total_sales,
+ROW_NUMBER() OVER(ORDER BY SUM(s1.sales_amount) ASC) AS rank_products
+FROM gold.fact_sales s1
+LEFT JOIN gold.dim_products s2
+ON s1.product_key = s2.product_key
+GROUP BY s2.product_name) t
+WHERE rank_products < 6
