@@ -1,0 +1,13 @@
+------------------------------
+  Cumulative Analysis
+---------------------------
+--cumulative total sales month wise
+SELECT months,total_sales, SUM(total_sales) OVER(ORDER BY months ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_sales
+FROM
+(SELECT 
+DATETRUNC(MONTH,order_date) AS months,
+SUM(sales_amount) AS total_sales
+FROM gold.fact_sales
+WHERE order_date IS NOT NULL
+GROUP BY DATETRUNC(MONTH,order_date)
+)t
